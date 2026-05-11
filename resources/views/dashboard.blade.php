@@ -5,7 +5,7 @@
     <div class="col-md-4">
         <div class="card bg-primary text-white">
             <div class="card-body">
-                <h6 class="card-title text-white-50">Total Barang</h6>
+                <h6 class="card-title text-black-50">Total Barang</h6>
                 <h3>{{ $totalBarang }}</h3>
             </div>
         </div>
@@ -42,7 +42,7 @@
                     <input type="text" name="search" class="form-control" placeholder="Cari barang..." value="{{ request('search') }}">
                 </div>
                 <div class="col-md-4">
-                    <select name="kategori_id" class="form-select">
+                    <select name="kategori_id" class="form-select" onchange="this.form.submit()">
                         <option value="">Semua Kategori</option>
                         @foreach ($categories as $category)
                             <option value="{{ $category->id }}" {{ request('kategori_id') == $category->id ? 'selected' : '' }}>
@@ -81,9 +81,9 @@
                             </td>
                             <td>
                                 @if ($barang->jumlah_stok == 0)
-                                    <span class="badge bg-danger">Habis</span>
+                                    <span class="fw-semibold text-danger">{{ $barang->jumlah_stok }}</span>
                                 @elseif ($barang->jumlah_stok < 20)
-                                    <span class="badge bg-warning">{{ $barang->jumlah_stok }}</span>
+                                    <span class="fw-semibold text-warning">{{ $barang->jumlah_stok }}</span>
                                 @else
                                     {{ $barang->jumlah_stok }}
                                 @endif
@@ -91,6 +91,9 @@
                             <td>{{ $barang->satuan }}</td>
                             <td>Rp {{ number_format($barang->harga_jual, 0, ',', '.') }}</td>
                             <td>
+                                <a href="{{ route('barang.show', $barang->id) }}" class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-eye me-1"></i>Detail
+                                </a>
                                 <a href="{{ route('barang.edit', $barang) }}" class="btn btn-sm btn-warning">
                                     <i class="bi bi-pencil-square me-1"></i>Edit
                                 </a>
@@ -108,8 +111,13 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-center mt-4">
-            {{ $barangs->links() }}
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-2">
+            <div class="text-muted">
+                Menampilkan {{ $barangs->total() ? $barangs->firstItem() : 0 }}-{{ $barangs->total() ? $barangs->lastItem() : 0 }} dari {{ $barangs->total() }} barang
+            </div>
+            <div>
+                {{ $barangs->links() }}
+            </div>
         </div>
     </div>
 </div>
