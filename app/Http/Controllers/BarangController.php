@@ -26,6 +26,7 @@ class BarangController extends Controller
         $barangs = $query->latest()->paginate(10)->withQueryString();
 
         $totalBarang = Barang::count();
+        $totalKategori = Category::count();
         $stokMenipis = Barang::where('jumlah_stok', '<', 20)
             ->where('jumlah_stok', '>', 0)
             ->count();
@@ -33,7 +34,7 @@ class BarangController extends Controller
 
         $categories = Category::all();
 
-        return view('dashboard', compact('barangs', 'totalBarang', 'stokMenipis', 'stokHabis', 'categories'));
+        return view('dashboard', compact('barangs', 'totalBarang', 'totalKategori', 'stokMenipis', 'stokHabis', 'categories'));
     }
 
     public function create(): View
@@ -50,14 +51,11 @@ class BarangController extends Controller
             'nama_barang' => ['required', 'string', 'max:255'],
             'foto_barang' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'satuan' => ['required', 'string', 'max:255'],
-            'jumlah_stok' => ['required', 'integer'],
-            'stok_minimum' => ['required', 'integer', function ($attribute, $value, $fail) use ($request) {
-                if ($value > $request->jumlah_stok) {
-                    $fail('Stok minimum tidak boleh lebih besar dari jumlah stok.');
-                }
-            }],
-            'harga_beli' => ['required', 'integer'],
-            'harga_jual' => ['required', 'integer'],
+            // Tambahkan min:0 untuk memblokir angka minus
+            'jumlah_stok' => ['required', 'integer', 'min:0'],
+            'stok_minimum' => ['required', 'integer', 'min:0'],
+            'harga_beli' => ['required', 'integer', 'min:0'],
+            'harga_jual' => ['required', 'integer', 'min:0', 'gte:harga_beli'],
             'berat_ukuran' => ['required', 'string', 'max:255'],
             'lokasi_simpan' => ['required', 'string', 'max:255'],
             'deskripsi' => ['nullable', 'string'],
@@ -97,14 +95,11 @@ class BarangController extends Controller
             'nama_barang' => ['required', 'string', 'max:255'],
             'foto_barang' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'satuan' => ['required', 'string', 'max:255'],
-            'jumlah_stok' => ['required', 'integer'],
-            'stok_minimum' => ['required', 'integer', function ($attribute, $value, $fail) use ($request) {
-                if ($value > $request->jumlah_stok) {
-                    $fail('Stok minimum tidak boleh lebih besar dari jumlah stok.');
-                }
-            }],
-            'harga_beli' => ['required', 'integer'],
-            'harga_jual' => ['required', 'integer'],
+            // Tambahkan min:0 untuk memblokir angka minus
+            'jumlah_stok' => ['required', 'integer', 'min:0'],
+            'stok_minimum' => ['required', 'integer', 'min:0'],
+            'harga_beli' => ['required', 'integer', 'min:0'],
+            'harga_jual' => ['required', 'integer', 'min:0', 'gte:harga_beli'],
             'berat_ukuran' => ['required', 'string', 'max:255'],
             'lokasi_simpan' => ['required', 'string', 'max:255'],
             'deskripsi' => ['nullable', 'string'],

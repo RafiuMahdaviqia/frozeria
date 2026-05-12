@@ -37,28 +37,32 @@ class CategoryController extends Controller
             ->with('success', 'Kategori berhasil ditambahkan.');
     }
 
-    public function edit(Category $category): View
+    // PERBAIKAN: Ubah $category menjadi $kategori
+    public function edit(Category $kategori): View
     {
-        return view('kategori.form', compact('category'));
+        // PERBAIKAN: Ubah compact menjadi 'kategori'
+        return view('kategori.form', compact('kategori'));
     }
 
-    public function update(Request $request, Category $category): RedirectResponse
+    // PERBAIKAN: Ubah $category menjadi $kategori
+    public function update(Request $request, Category $kategori): RedirectResponse
     {
         $validated = $request->validate([
-            'nama_kategori' => ['required', 'string', 'max:255', 'unique:categories,nama_kategori,'.$category->id],
+            'nama_kategori' => ['required', 'string', 'max:255', 'unique:categories,nama_kategori,'.$kategori->id],
             'deskripsi' => ['nullable', 'string'],
         ]);
 
-        $category->update($validated);
+        $kategori->update($validated);
 
         return redirect()
             ->route('kategori.index')
             ->with('success', 'Kategori berhasil diperbarui.');
     }
 
-    public function destroy(Category $category): RedirectResponse
+    // PERBAIKAN: Ubah $category menjadi $kategori
+    public function destroy(Category $kategori): RedirectResponse
     {
-        $category->delete();
+        $kategori->delete();
 
         return redirect()
             ->route('kategori.index')

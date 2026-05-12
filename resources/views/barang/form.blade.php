@@ -1,166 +1,146 @@
 @extends('app')
 
 @section('content')
-<div class="row">
-    <div class="col-md-10 offset-md-1">
-        <h2 class="mb-4">
-            @if (isset($barang))
-                Edit Barang
-            @else
-                Tambah Barang
-            @endif
-        </h2>
+<style>
+    .upload-area {
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        padding: 3rem 1rem;
+        text-align: center;
+        transition: all 0.3s;
+    }
+    .upload-area:hover {
+        border-color: #6c757d;
+        background-color: #e9ecef;
+    }
+</style>
 
-        <div class="card">
-            <div class="card-body">
-                <form method="POST" action="{{ isset($barang) ? route('barang.update', $barang) : route('barang.store') }}" enctype="multipart/form-data">
-                    @csrf
-                    @if (isset($barang))
-                        @method('PUT')
-                    @endif
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="kategori_id" class="form-label">Kategori</label>
-                                <select class="form-select @error('kategori_id') is-invalid @enderror" id="kategori_id" name="kategori_id">
-                                    <option value="">-- Pilih Kategori --</option>
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('kategori_id', $barang->kategori_id ?? '') == $category->id ? 'selected' : '' }}>
-                                            {{ $category->nama_kategori }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('kategori_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="nama_barang" class="form-label">Nama Barang <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('nama_barang') is-invalid @enderror" id="nama_barang" name="nama_barang" value="{{ old('nama_barang', $barang->nama_barang ?? '') }}" required>
-                                @error('nama_barang')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="foto_barang" class="form-label">Foto Barang</label>
-                                <input type="file" class="form-control @error('foto_barang') is-invalid @enderror" id="foto_barang" name="foto_barang" accept="image/*">
-                                @error('foto_barang')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                                @if (isset($barang) && $barang->foto_barang)
-                                    <div class="mt-2">
-                                        <small class="text-muted">Foto saat ini:</small><br>
-                                        <img src="{{ Storage::url($barang->foto_barang) }}" alt="{{ $barang->nama_barang }}" style="max-width: 150px; margin-top: 5px;">
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="satuan" class="form-label">Satuan <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('satuan') is-invalid @enderror" id="satuan" name="satuan" value="{{ old('satuan', $barang->satuan ?? '') }}" placeholder="contoh: Pcs, Kg, Liter" required>
-                                @error('satuan')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="mb-3">
-                                <label for="jumlah_stok" class="form-label">Jumlah Stok <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('jumlah_stok') is-invalid @enderror" id="jumlah_stok" name="jumlah_stok" value="{{ old('jumlah_stok', $barang->jumlah_stok ?? '') }}" required>
-                                @error('jumlah_stok')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="mb-3">
-                                <label for="stok_minimum" class="form-label">Stok Minimum <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('stok_minimum') is-invalid @enderror" id="stok_minimum" name="stok_minimum" value="{{ old('stok_minimum', $barang->stok_minimum ?? '') }}" required>
-                                @error('stok_minimum')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="mb-3">
-                                <label for="harga_beli" class="form-label">Harga Beli <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('harga_beli') is-invalid @enderror" id="harga_beli" name="harga_beli" value="{{ old('harga_beli', $barang->harga_beli ?? '') }}" required>
-                                @error('harga_beli')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="mb-3">
-                                <label for="harga_jual" class="form-label">Harga Jual <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('harga_jual') is-invalid @enderror" id="harga_jual" name="harga_jual" value="{{ old('harga_jual', $barang->harga_jual ?? '') }}" required>
-                                @error('harga_jual')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="berat_ukuran" class="form-label">Berat/Ukuran <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('berat_ukuran') is-invalid @enderror" id="berat_ukuran" name="berat_ukuran" value="{{ old('berat_ukuran', $barang->berat_ukuran ?? '') }}" placeholder="contoh: 500g, 1kg, 10x10cm" required>
-                                @error('berat_ukuran')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="lokasi_simpan" class="form-label">Lokasi Simpan <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('lokasi_simpan') is-invalid @enderror" id="lokasi_simpan" name="lokasi_simpan" value="{{ old('lokasi_simpan', $barang->lokasi_simpan ?? '') }}" placeholder="contoh: Rak A1, Freezer 2" required>
-                                @error('lokasi_simpan')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="deskripsi" class="form-label">Deskripsi</label>
-                        <textarea class="form-control @error('deskripsi') is-invalid @enderror" id="deskripsi" name="deskripsi" rows="3">{{ old('deskripsi', $barang->deskripsi ?? '') }}</textarea>
-                        @error('deskripsi')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            @if (isset($barang))
-                                Perbarui
-                            @else
-                                Simpan
-                            @endif
-                        </button>
-                        <a href="{{ route('barang.index') }}" class="btn btn-secondary">Batal</a>
-                    </div>
-                </form>
-            </div>
+<div class="card shadow-sm border-0 mb-5">
+    <div class="card-body p-4">
+        <div class="d-flex align-items-center mb-4">
+            <a href="{{ route('barang.index') }}" class="btn btn-sm btn-outline-secondary me-3">
+                &laquo; Kembali
+            </a>
+            <h5 class="fw-bold mb-0">{{ isset($barang) ? 'Edit Barang' : 'Tambah Barang Baru' }}</h5>
         </div>
+
+        <form action="{{ isset($barang) ? route('barang.update', $barang->id) : route('barang.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @if(isset($barang))
+                @method('PUT')
+            @endif
+
+            <div class="mb-4">
+                <label for="foto_barang" class="form-label text-muted small fw-bold">Foto barang</label>
+                <div class="upload-area position-relative">
+                    @if(isset($barang) && $barang->foto_barang)
+                        <div class="mb-3">
+                            <img src="{{ asset('storage/' . $barang->foto_barang) }}" alt="Foto Lama" class="img-thumbnail" style="max-height: 150px;">
+                            <p class="text-muted small mt-2">Foto saat ini</p>
+                        </div>
+                    @else
+                        <i class="bi bi-image text-muted" style="font-size: 2.5rem;"></i>
+                        <p class="text-muted mt-2 mb-1">Klik untuk memilih foto, atau seret file ke sini</p>
+                        <p class="text-muted small mb-3">Format: JPG, PNG — Maks. 2 MB</p>
+                    @endif
+                    <input type="file" name="foto_barang" id="foto_barang" class="form-control" accept=".jpg,.jpeg,.png">
+                </div>
+                @error('foto_barang') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+
+            <div class="mb-3">
+                <label for="nama_barang" class="form-label text-muted small fw-bold">Nama barang <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="nama_barang" id="nama_barang" value="{{ old('nama_barang', $barang->nama_barang ?? '') }}" required>
+                @error('nama_barang') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="kategori_id" class="form-label text-muted small fw-bold">Kategori <span class="text-danger">*</span></label>
+                    <select name="kategori_id" id="kategori_id" class="form-select" required>
+                        <option value="">Pilih kategori</option>
+                        @foreach ($categories as $cat)
+                            <option value="{{ $cat->id }}" {{ (old('kategori_id', $barang->kategori_id ?? '')) == $cat->id ? 'selected' : '' }}>
+                                {{ $cat->nama_kategori }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('kategori_id') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+                <div class="col-md-6 mt-3 mt-md-0">
+                    <label for="satuan" class="form-label text-muted small fw-bold">Satuan <span class="text-danger">*</span></label>
+                    <select name="satuan" id="satuan" class="form-select" required>
+                        <option value="">Pilih satuan</option>
+                        @php $opsiSatuan = ['Pcs', 'Pack', 'Box', 'Gram', 'Kg', 'Karton']; @endphp
+                        @foreach ($opsiSatuan as $opt)
+                            <option value="{{ $opt }}" {{ (old('satuan', $barang->satuan ?? '')) == $opt ? 'selected' : '' }}>
+                                {{ $opt }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('satuan') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="jumlah_stok" class="form-label text-muted small fw-bold">Jumlah stok <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" name="jumlah_stok" id="jumlah_stok" min="0" value="{{ old('jumlah_stok', $barang->jumlah_stok ?? '') }}" required>
+                    @error('jumlah_stok') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+                <div class="col-md-6 mt-3 mt-md-0">
+                    <label for="stok_minimum" class="form-label text-muted small fw-bold">Stok minimum <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" name="stok_minimum" id="stok_minimum" min="0" value="{{ old('stok_minimum', $barang->stok_minimum ?? '') }}" required>
+                    @error('stok_minimum') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="harga_jual" class="form-label text-muted small fw-bold">Harga jual (Rp) <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" name="harga_jual" id="harga_jual" min="0" max="1000000000" value="{{ old('harga_jual', $barang->harga_jual ?? '') }}" required>
+                    @error('harga_jual') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+                <div class="col-md-6 mt-3 mt-md-0">
+                    <label for="harga_beli" class="form-label text-muted small fw-bold">Harga beli (Rp) <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" name="harga_beli" id="harga_beli" min="0" max="1000000000" value="{{ old('harga_beli', $barang->harga_beli ?? '') }}" required>
+                    @error('harga_beli') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="berat_ukuran" class="form-label text-muted small fw-bold">Berat / ukuran <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="berat_ukuran" id="berat_ukuran" value="{{ old('berat_ukuran', $barang->berat_ukuran ?? '') }}" required placeholder="contoh: 500g, 1kg">
+                    @error('berat_ukuran') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+                <div class="col-md-6 mt-3 mt-md-0">
+                    <label for="lokasi_simpan" class="form-label text-muted small fw-bold">Lokasi simpan <span class="text-danger">*</span></label>
+                    <select name="lokasi_simpan" id="lokasi_simpan" class="form-select" required>
+                        <option value="">Pilih lokasi simpan</option>
+                        @php $opsiLokasi = ['Freezer Depan', 'Freezer Belakang 1', 'Freezer Belakang 2', 'Showcase Utama', 'Rak Kering']; @endphp
+                        @foreach ($opsiLokasi as $opt)
+                            <option value="{{ $opt }}" {{ (old('lokasi_simpan', $barang->lokasi_simpan ?? '')) == $opt ? 'selected' : '' }}>
+                                {{ $opt }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('lokasi_simpan') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="deskripsi" class="form-label text-muted small fw-bold">Deskripsi</label>
+                <textarea class="form-control" name="deskripsi" id="deskripsi" rows="3">{{ old('deskripsi', $barang->deskripsi ?? '') }}</textarea>
+                @error('deskripsi') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                <a href="{{ route('barang.index') }}" class="btn btn-light border text-muted px-4">Batal</a>
+                <button type="submit" class="btn btn-outline-success px-4 fw-medium">{{ isset($barang) ? 'Update Barang' : 'Simpan Barang' }}</button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

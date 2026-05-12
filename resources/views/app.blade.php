@@ -7,20 +7,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        /* Sedikit custom styling agar mirip dengan mockup */
         .navbar-dark-custom { background-color: #1a1a1a; }
     </style>
 </head>
 <body class="bg-light">
 
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-dark-custom mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-dark-custom mb-4 py-3">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ url('/') }}">Frozeria Stok</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('/') || request()->routeIs('barang.*') ? 'active' : '' }}" href="{{ url('/') }}">Dashboard</a>
                     </li>
@@ -31,21 +30,22 @@
                         <a class="nav-link {{ request()->is('bantuan') ? 'active' : '' }}" href="{{ url('/bantuan') }}">Bantuan</a>
                     </li>
                 </ul>
+                <div class="d-flex">
+                    @if(request()->is('/') || request()->routeIs('barang.index'))
+                        <a href="{{ route('barang.create') }}" class="btn btn-outline-light border-secondary shadow-sm">
+                            + Tambah Barang
+                        </a>
+                    @endif
+                </div>
             </div>
         </div>
     </nav>
 
     <div class="container mb-5">
         @if (session()->has('success'))
-            <div class="toast-container position-fixed bottom-0 end-0 p-3">
-                <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            {{ session('success') }}
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                </div>
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
@@ -53,15 +53,5 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    @if (session()->has('success'))
-        <script>
-            const successToastEl = document.getElementById('successToast');
-
-            if (successToastEl) {
-                const successToast = new bootstrap.Toast(successToastEl);
-                successToast.show();
-            }
-        </script>
-    @endif
 </body>
 </html>

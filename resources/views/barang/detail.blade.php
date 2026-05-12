@@ -1,171 +1,131 @@
 @extends('app')
 
 @section('content')
-<div class="row">
-    <div class="col-md-10 offset-md-1">
-        <h2 class="mb-4">Detail Barang</h2>
+<style>
+    /* Styling khusus agar kotak detail persis seperti Mockup Soal */
+    .detail-box {
+        border: 1px solid #e9ecef;
+        padding: 1rem 1.25rem;
+        background-color: #fff;
+        height: 100%;
+    }
+    .detail-label {
+        font-size: 0.85rem;
+        color: #858c93;
+        margin-bottom: 0.25rem;
+    }
+    .detail-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 0;
+    }
+</style>
 
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body text-center">
-                        @if ($barang->foto_barang)
-                            <img src="{{ Storage::url($barang->foto_barang) }}" alt="{{ $barang->nama_barang }}" class="img-fluid rounded mb-3" style="max-height: 300px;">
-                        @else
-                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 300px;">
-                                <span class="text-muted">Tidak ada foto</span>
-                            </div>
-                        @endif
-                        <h5 class="card-title">{{ $barang->nama_barang }}</h5>
-                    </div>
-                </div>
+<div class="card shadow-sm border-0 mb-5">
+    <div class="card-body p-4">
+        
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center border-bottom pb-3 mb-4 gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <a href="{{ route('barang.index') }}" class="btn btn-sm btn-outline-secondary px-3">
+                    &laquo; Kembali
+                </a>
+                <h5 class="fw-bold mb-0">Detail Barang</h5>
             </div>
+            <div class="d-flex gap-2">
+                <a href="{{ route('barang.edit', $barang->id) }}" class="btn btn-sm btn-outline-primary px-4">Edit Barang</a>
+                <button type="button" class="btn btn-sm btn-outline-danger px-4" data-bs-toggle="modal" data-bs-target="#deleteModal">Hapus</button>
+            </div>
+        </div>
 
-            <div class="col-md-8">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Informasi Barang</h5>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-borderless">
-                            <tr>
-                                <td><strong>Kategori:</strong></td>
-                                <td>
-                                    @if ($barang->category)
-                                        {{ $barang->category->nama_kategori }}
-                                    @else
-                                        <span class="badge bg-secondary">Tidak Berkategori</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Satuan:</strong></td>
-                                <td>{{ $barang->satuan }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Berat/Ukuran:</strong></td>
-                                <td>{{ $barang->berat_ukuran }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Lokasi Simpan:</strong></td>
-                                <td>{{ $barang->lokasi_simpan }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Informasi Stok</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="text-center">
-                                    <h6 class="text-muted">Jumlah Stok</h6>
-                                    @if ($barang->jumlah_stok == 0)
-                                        <h3 class="text-danger">{{ $barang->jumlah_stok }}</h3>
-                                    @elseif ($barang->jumlah_stok < 20)
-                                        <h3 class="text-warning">{{ $barang->jumlah_stok }}</h3>
-                                    @else
-                                        <h3 class="text-success">{{ $barang->jumlah_stok }}</h3>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="text-center">
-                                    <h6 class="text-muted">Stok Minimum</h6>
-                                    <h3>{{ $barang->stok_minimum }}</h3>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="text-center">
-                                    <h6 class="text-muted">Status</h6>
-                                    @if ($barang->jumlah_stok == 0)
-                                        <span class="badge bg-danger" style="font-size: 14px;">Habis</span>
-                                    @elseif ($barang->jumlah_stok < 20)
-                                        <span class="badge bg-warning" style="font-size: 14px;">Menipis</span>
-                                    @else
-                                        <span class="badge bg-success" style="font-size: 14px;">Normal</span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Informasi Harga</h5>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-borderless">
-                            <tr>
-                                <td><strong>Harga Beli:</strong></td>
-                                <td>Rp {{ number_format($barang->harga_beli, 0, ',', '.') }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Harga Jual:</strong></td>
-                                <td>Rp {{ number_format($barang->harga_jual, 0, ',', '.') }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Margin Keuntungan:</strong></td>
-                                <td>
-                                    @php
-                                        $margin = $barang->harga_jual - $barang->harga_beli;
-                                        $marginPercent = ($margin / $barang->harga_beli) * 100;
-                                    @endphp
-                                    Rp {{ number_format($margin, 0, ',', '.') }} ({{ number_format($marginPercent, 2, ',', '.') }}%)
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-
-                @if ($barang->deskripsi)
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Deskripsi</h5>
-                        </div>
-                        <div class="card-body">
-                            {{ $barang->deskripsi }}
-                        </div>
+        <div class="d-flex align-items-center mb-4">
+            <div class="me-4">
+                @if($barang->foto_barang)
+                    <img src="{{ asset('storage/' . $barang->foto_barang) }}" alt="{{ $barang->nama_barang }}" class="img-thumbnail" style="width: 120px; height: 120px; object-fit: cover;">
+                @else
+                    <div class="img-thumbnail d-flex justify-content-center align-items-center bg-light" style="width: 120px; height: 120px;">
+                        <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
                     </div>
                 @endif
+            </div>
+            <div>
+                <h4 class="fw-bold mb-2">{{ $barang->nama_barang }}</h4>
+                <span class="badge border border-secondary text-dark fw-normal px-3 py-1">
+                    {{ $barang->category ? $barang->category->nama_kategori : 'Tanpa Kategori' }}
+                </span>
+            </div>
+        </div>
 
-                <div class="mb-4">
-                    <a href="{{ route('barang.edit', $barang) }}" class="btn btn-warning">
-                        <i class="bi bi-pencil-square me-1"></i>Edit Barang
-                    </a>
-                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                        <i class="bi bi-trash me-1"></i>Hapus Barang
-                    </button>
-                    <a href="{{ route('barang.index') }}" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left me-1"></i>Kembali
-                    </a>
+        <div class="row g-0 border-top border-start border-end">
+            
+            <div class="col-md-6 border-bottom border-end">
+                <div class="detail-box">
+                    <p class="detail-label">Jumlah stok</p>
+                    <p class="detail-value">{{ $barang->jumlah_stok }} {{ $barang->satuan }}</p>
                 </div>
             </div>
+            <div class="col-md-6 border-bottom">
+                <div class="detail-box">
+                    <p class="detail-label">Stok minimum</p>
+                    <p class="detail-value">{{ $barang->stok_minimum }} {{ $barang->satuan }}</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 border-bottom border-end">
+                <div class="detail-box">
+                    <p class="detail-label">Harga jual</p>
+                    <p class="detail-value">Rp {{ number_format($barang->harga_jual, 0, ',', '.') }}</p>
+                </div>
+            </div>
+            <div class="col-md-6 border-bottom">
+                <div class="detail-box">
+                    <p class="detail-label">Harga beli</p>
+                    <p class="detail-value">Rp {{ number_format($barang->harga_beli, 0, ',', '.') }}</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 border-bottom border-end">
+                <div class="detail-box">
+                    <p class="detail-label">Berat / ukuran</p>
+                    <p class="detail-value">{{ $barang->berat_ukuran }}</p>
+                </div>
+            </div>
+            <div class="col-md-6 border-bottom">
+                <div class="detail-box">
+                    <p class="detail-label">Lokasi simpan</p>
+                    <p class="detail-value">{{ $barang->lokasi_simpan }}</p>
+                </div>
+            </div>
+
+            <div class="col-12 border-bottom">
+                <div class="detail-box">
+                    <p class="detail-label">Deskripsi</p>
+                    <p class="mb-0 text-dark" style="font-size: 0.95rem;">
+                        {{ $barang->deskripsi ? $barang->deskripsi : 'Tidak ada deskripsi untuk barang ini.' }}
+                    </p>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Konfirmasi Hapus</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title text-danger fw-bold">⚠️ Hapus Barang?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <p>Apakah Anda yakin ingin menghapus barang "<strong>{{ $barang->nama_barang }}</strong>"?</p>
+            <div class="modal-body py-4">
+                Apakah Anda yakin ingin menghapus <strong>{{ $barang->nama_barang }}</strong>? Data akan hilang permanen dari sistem.
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <form method="POST" action="{{ route('barang.destroy', $barang) }}" style="display: inline;">
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                <form action="{{ route('barang.destroy', $barang->id) }}" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Hapus</button>
+                    <button type="submit" class="btn btn-danger px-4">Ya, Hapus</button>
                 </form>
             </div>
         </div>
